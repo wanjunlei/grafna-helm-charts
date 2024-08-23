@@ -60,7 +60,7 @@ spec:
             {{- with .Values.distributor.extraArgs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          image: {{ include "tempo.imageReference" $dict }}
+          image: {{ include "tempo.imageReference" $dict | trim }}
           imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
           name: distributor
           ports:
@@ -132,10 +132,6 @@ spec:
               name: runtime-config
             - mountPath: /var/tempo
               name: tempo-distributor-store
-            {{- if .Values.enterprise.enabled }}
-            - name: license
-              mountPath: /license
-            {{- end }}
             {{- with .Values.distributor.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -165,11 +161,6 @@ spec:
           {{- include "tempo.runtimeVolume" . | nindent 10 }}
         - name: tempo-distributor-store
           emptyDir: {}
-        {{- if .Values.enterprise.enabled }}
-        - name: license
-          secret:
-            secretName: {{ tpl .Values.license.secretName . }}
-        {{- end }}
         {{- with .Values.distributor.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

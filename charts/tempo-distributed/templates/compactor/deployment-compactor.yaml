@@ -62,7 +62,7 @@ spec:
             {{- with .Values.compactor.extraArgs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          image: {{ include "tempo.imageReference" $dict }}
+          image: {{ include "tempo.imageReference" $dict | trim }}
           imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
           name: compactor
           ports:
@@ -91,10 +91,6 @@ spec:
               name: runtime-config
             - mountPath: /var/tempo
               name: tempo-compactor-store
-            {{- if .Values.enterprise.enabled }}
-            - name: license
-              mountPath: /license
-            {{- end }}
             {{- with .Values.compactor.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -130,11 +126,6 @@ spec:
           {{- include "tempo.runtimeVolume" . | nindent 10 }}
         - name: tempo-compactor-store
           emptyDir: {}
-        {{- if .Values.enterprise.enabled }}
-        - name: license
-          secret:
-            secretName: {{ tpl .Values.license.secretName . }}
-        {{- end }}
         {{- with .Values.compactor.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

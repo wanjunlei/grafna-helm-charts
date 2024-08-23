@@ -59,7 +59,7 @@ spec:
             {{- with .Values.metricsGenerator.extraArgs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          image: {{ include "tempo.imageReference" $dict }}
+          image: {{ include "tempo.imageReference" $dict | trim }}
           imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
           name: metrics-generator
           ports:
@@ -90,10 +90,6 @@ spec:
               name: runtime-config
             - mountPath: /var/tempo
               name: wal
-            {{- if .Values.enterprise.enabled }}
-            - name: license
-              mountPath: /license
-            {{- end }}
             {{- with .Values.metricsGenerator.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -121,11 +117,6 @@ spec:
           {{- include "tempo.configVolume" . | nindent 10 }}
         - name: runtime-config
           {{- include "tempo.runtimeVolume" . | nindent 10 }}
-        {{- if .Values.enterprise.enabled }}
-        - name: license
-          secret:
-            secretName: {{ tpl .Values.license.secretName . }}
-        {{- end }}
         - name: wal
           emptyDir: {{- toYaml .Values.metricsGenerator.walEmptyDir | nindent 12 }}
         {{- with .Values.metricsGenerator.extraVolumes }}

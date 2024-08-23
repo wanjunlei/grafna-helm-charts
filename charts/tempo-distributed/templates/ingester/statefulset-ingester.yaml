@@ -78,7 +78,7 @@ spec:
             {{- with .Values.ingester.extraArgs }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          image: {{ include "tempo.imageReference" $dict }}
+          image: {{ include "tempo.imageReference" $dict  | trim}}
           imagePullPolicy: {{ .Values.tempo.image.pullPolicy }}
           name: ingester
           ports:
@@ -111,10 +111,6 @@ spec:
               name: runtime-config
             - mountPath: /var/tempo
               name: data
-            {{- if .Values.enterprise.enabled }}
-            - name: license
-              mountPath: /license
-            {{- end }}
             {{- with .Values.ingester.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -150,11 +146,6 @@ spec:
           {{- include "tempo.configVolume" . | nindent 10 }}
         - name: runtime-config
           {{- include "tempo.runtimeVolume" . | nindent 10 }}
-        {{- if .Values.enterprise.enabled }}
-        - name: license
-          secret:
-            secretName: {{ tpl .Values.license.secretName . }}
-        {{- end }}
         {{- with .Values.ingester.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

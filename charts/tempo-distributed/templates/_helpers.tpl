@@ -28,7 +28,7 @@ If release name contains chart name it will be used as a full name.
 Docker image selector for Tempo. Hierachy based on global, component, and tempo values.
 */}}
 {{- define "tempo.tempoImage" -}}
-{{- $registry := coalesce .global.registry .component.registry .tempo.registry -}}
+{{- $registry := coalesce .global.imageRegistry .component.registry .tempo.registry -}}
 {{- $repository := coalesce .component.repository .tempo.repository -}}
 {{- $tag := coalesce .component.tag .tempo.tag .defaultVersion | toString -}}
 {{- printf "%s/%s:%s" $registry $repository $tag -}}
@@ -38,7 +38,7 @@ Docker image selector for Tempo. Hierachy based on global, component, and tempo 
 Optional list of imagePullSecrets for Tempo docker images
 */}}
 {{- define "tempo.imagePullSecrets" -}}
-{{- $imagePullSecrets := coalesce .global.pullSecrets .component.pullSecrets .tempo.pullSecrets -}}
+{{- $imagePullSecrets := coalesce .global.imagePullSecrets .component.pullSecrets .tempo.pullSecrets -}}
 {{- if $imagePullSecrets  -}}
 imagePullSecrets:
 {{- range $imagePullSecrets }}
@@ -59,17 +59,13 @@ Calculate image name based on whether enterprise features are requested.  Fallba
 */}}
 {{- define "tempo.imageReference" -}}
 {{ $tempo := "" }}
-{{- if .ctx.Values.enterprise.enabled -}}
-{{ $tempo = merge .ctx.Values.enterprise.image .ctx.Values.tempo.image }}
-{{- else -}}
 {{ $tempo = .ctx.Values.tempo.image }}
-{{- end -}}
 {{- $componentSection := include "tempo.componentSectionFromName" . }}
 {{- if not (hasKey .ctx.Values $componentSection) }}
 {{- print "Component section " $componentSection " does not exist" | fail }}
 {{- end }}
 {{- $component := (index .ctx.Values $componentSection).image | default dict }}
-{{- $dict := dict "tempo" $tempo "component" $component "global" .ctx.Values.global.image "defaultVersion" .ctx.Chart.AppVersion -}}
+{{- $dict := dict "tempo" $tempo "component" $component "global" .ctx.Values.global "defaultVersion" .ctx.Chart.AppVersion -}}
 {{- include "tempo.tempoImage" $dict -}}
 {{- end -}}
 

@@ -10,7 +10,7 @@ gateway auth secret name
 gateway image
 */}}
 {{- define "tempo.gatewayImage" -}}
-{{- $dict := dict "tempo" (dict) "service" .Values.gateway.image "global" .Values.global.image -}}
+{{- $dict := dict "tempo" (dict) "service" .Values.gateway.image "global" .Values.global -}}
 {{- include "tempo.tempoImage" $dict -}}
 {{- end }}
 
@@ -18,6 +18,6 @@ gateway image
 gateway imagePullSecrets
 */}}
 {{- define "tempo.gatewayImagePullSecrets" -}}
-{{- $dict := dict "component" .Values.gateway.image "global" .Values.global.image "tempo" (dict) -}}
+{{- $dict := dict "component" .Values.gateway.image "global" .Values.global "tempo" (dict) -}}
 {{- include "tempo.imagePullSecrets" $dict -}}
 {{- end }}

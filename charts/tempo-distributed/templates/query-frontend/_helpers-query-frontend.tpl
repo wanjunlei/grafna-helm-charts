@@ -2,7 +2,7 @@
 query image
 */}}
 {{- define "tempo.queryImage" -}}
-{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.query.image "global" .Values.global.image "defaultVersion" .Chart.AppVersion -}}
+{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.query.image "global" .Values.global "defaultVersion" .Chart.AppVersion -}}
 {{- include "tempo.tempoImage" $dict -}}
 {{- end }}
 
@@ -10,7 +10,7 @@ query image
 queryFrontend imagePullSecrets
 */}}
 {{- define "tempo.queryFrontendImagePullSecrets" -}}
-{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.image "global" .Values.global.image -}}
+{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.image "global" .Values.global -}}
 {{- include "tempo.imagePullSecrets" $dict -}}
 {{- end }}
 
@@ -18,6 +18,6 @@ queryFrontend imagePullSecrets
 query imagePullSecrets
 */}}
 {{- define "tempo.queryImagePullSecrets" -}}
-{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.query.image "global" .Values.global.image -}}
+{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.queryFrontend.query.image "global" .Values.global -}}
 {{- include "tempo.imagePullSecrets" $dict -}}
 {{- end }}

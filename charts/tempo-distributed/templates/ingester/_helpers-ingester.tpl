@@ -1,5 +1,5 @@
 {{- define "tempo.ingesterImagePullSecrets" -}}
-{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.ingester.image "global" .Values.global.image -}}
+{{- $dict := dict "tempo" .Values.tempo.image "component" .Values.ingester.image "global" .Values.global -}}
 {{- include "tempo.imagePullSecrets" $dict -}}
 {{- end }}
 {{- define "ingester.zoneAwareReplicationMap" -}}
@@ -109,18 +109,11 @@ Params:
   rolloutZoneName = rollout zone name (optional)
 */}}
 {{- define "ingester.selectorLabels" -}}
-{{- if .ctx.Values.enterprise.legacyLabels }}
-{{- if .component -}}
-app: {{ include "tempo.name" .ctx }}-{{ .component }}
-{{- end }}
-release: {{ .ctx.Release.Name }}
-{{- else -}}
 app.kubernetes.io/name: {{ include "tempo.name" .ctx }}
 app.kubernetes.io/instance: {{ .ctx.Release.Name }}
 {{- if .component }}
 app.kubernetes.io/component: {{ .component }}
 {{- end }}
-{{- end -}}
 {{- if .rolloutZoneName }}
 {{-   if not .component }}
 {{-     printf "Component name cannot be empty if rolloutZoneName (%s) is set" .rolloutZoneName | fail }}
@@ -142,21 +135,6 @@ Params:
 {{ with .ctx.Values.global.podLabels -}}
 {{ toYaml . }}
 {{ end }}
-{{- if .ctx.Values.enterprise.legacyLabels }}
-{{- if .component -}}
-app: {{ include "tempo.name" .ctx }}-{{ .component }}
-{{- if not .rolloutZoneName }}
-name: {{ .component }}
-{{- end }}
-{{- end }}
-{{- if .memberlist }}
-gossip_ring_member: "true"
-{{- end -}}
-{{- if .component }}
-target: {{ .component }}
-release: {{ .ctx.Release.Name }}
-{{- end }}
-{{- else -}}
 helm.sh/chart: {{ include "tempo.chart" .ctx }}
 app.kubernetes.io/name: {{ include "tempo.name" .ctx }}
 app.kubernetes.io/instance: {{ .ctx.Release.Name }}
@@ -167,7 +145,6 @@ app.kubernetes.io/component: {{ .component }}
 {{- end }}
 {{- if .memberlist }}
 app.kubernetes.io/part-of: memberlist
-{{- end }}
 {{- end }}
 {{- with .ctx.Values.ingester.podLabels }}
 {{ toYaml . }}

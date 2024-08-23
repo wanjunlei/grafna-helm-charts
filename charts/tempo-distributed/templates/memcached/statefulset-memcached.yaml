@@ -52,7 +52,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - image: {{ include "tempo.imageReference" $dict }}
+        - image: {{ include "tempo.imageReference" $dict | trim }}
           imagePullPolicy: {{ .Values.memcached.image.pullPolicy }}
           name: memcached
           {{- with .Values.memcached.extraArgs }}
@@ -80,7 +80,7 @@ spec:
         - args:
             - --memcached.address=localhost:11211
             - --web.listen-address=0.0.0.0:9150
-          image: {{ include "tempo.imageReference" (dict "ctx" . "component" "memcached-exporter") }}
+          image: {{ include "tempo.imageReference" (dict "ctx" . "component" "memcached-exporter") | trim }}
           imagePullPolicy: {{ .Values.memcachedExporter.image.pullPolicy }}
           name: exporter
           ports:
